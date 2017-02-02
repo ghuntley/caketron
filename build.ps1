@@ -86,7 +86,7 @@ if($FoundDotNetCliVersion -ne "1.0.0-preview2-1-003177")
 # Make sure nuget.exe exists.
 $NugetPath = Join-Path $ToolPath "nuget.exe"
 if (!(Test-Path $NugetPath)) {
-    Write-Host "Downloading NuGet.exe..."
+    Write-Output "Downloading NuGet.exe..."
     (New-Object System.Net.WebClient).DownloadFile($NugetUrl, $NugetPath);
 }
 
@@ -97,7 +97,7 @@ if (!(Test-Path $NugetPath)) {
 # Make sure Cake has been installed.
 $CakePath = Join-Path $ToolPath "Cake.CoreClr.$CakeVersion/Cake.dll"
 if (!(Test-Path $CakePath)) {
-    Write-Host "Installing Cake..."
+    Write-Output "Installing Cake..."
     Invoke-Expression "&`"$NugetPath`" install Cake.CoreClr -Version $CakeVersion -OutputDirectory `"$ToolPath`"" | Out-Null;
     if ($LASTEXITCODE -ne 0) {
         Throw "An error occured while restoring Cake from NuGet."
@@ -117,6 +117,6 @@ $Arguments = @{
 }.GetEnumerator() | %{"--{0}=`"{1}`"" -f $_.key, $_.value };
 
 # Start Cake
-Write-Host "Running build script..."
+Write-Output "Running build script..."
 &dotnet $CakePath "$Script" $Arguments $ScriptArgs
 exit $LASTEXITCODE
