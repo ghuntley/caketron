@@ -23,6 +23,11 @@ namespace CakeTron.Core
         public Engine(EngineSettings settings, IInbox inbox, ILog log, IEnumerable<RobotPart> handlers)
             : base(log)
         {
+            if (string.IsNullOrWhiteSpace(settings.Token))
+            {
+                throw new ArgumentException("No Gitter API key set.", nameof(settings));
+            }
+
             _log = log;
 
             var client = new HttpClient { Timeout = TimeSpan.FromMilliseconds(Timeout.Infinite) };
@@ -51,7 +56,7 @@ namespace CakeTron.Core
 
             // Engine
             collection.AddSingleton<Engine>();
-            collection.ConfigurePoco<EngineSettings>(configuration.GetSection("Engine"));
+            collection.ConfigurePoco<EngineSettings>(configuration.GetSection("CakeTron"));
 
             // Add custom registrations.
             services.Invoke(collection);

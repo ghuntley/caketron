@@ -18,16 +18,16 @@ namespace CakeTron
             var configuration = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: false)
-                .AddJsonFile("appsettings.Development.json", optional: true, reloadOnChange: false)
+                .AddJsonFile($"appsettings.{Environment.MachineName}.json", optional: true, reloadOnChange: false)
                 .AddEnvironmentVariables()
                 .Build();
 
             // Create the log.
             var log = new SerilogLogAdapter(new LoggerConfiguration()
-                            .WriteTo.LiterateConsole()
-                            .MinimumLevel.Verbose()
-                            .Enrich.FromLogContext()
-                            .CreateLogger());
+                .WriteTo.LiterateConsole()
+                .MinimumLevel.Verbose()
+                .Enrich.FromLogContext()
+                .CreateLogger());
 
             // Start the engine.
             var engine = Engine.Build(configuration, log, Configure);

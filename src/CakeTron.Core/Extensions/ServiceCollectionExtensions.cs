@@ -6,13 +6,15 @@ namespace CakeTron
 {
     internal static class ServiceCollectionExtensions
     {
-        public static void ConfigurePoco<TConfig>(this IServiceCollection services, IConfiguration configuration) 
+        public static TConfig ConfigurePoco<TConfig>(this IServiceCollection services, IConfiguration configuration) 
             where TConfig : class, new()
         {
             var config = new TConfig();
             configuration.Bind(config);
 
             services.AddSingleton(config);
+
+            return config;
         }
     }
 }
