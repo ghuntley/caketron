@@ -52,6 +52,7 @@ namespace CakeTron
             services.AddSingleton<RobotPart, UptimePart>();
             services.AddSingleton<RobotPart, PodBayDoorsPart>();
             services.AddSingleton<RobotPart, KarmaPart>();
+            services.AddSingleton<RobotPart, BotSnackPart>();
 
             // Services
             services.AddSingleton<IKarmaProvider, InMemoryKarmaProvider>();
