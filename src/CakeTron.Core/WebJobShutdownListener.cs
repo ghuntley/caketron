@@ -51,23 +51,19 @@ namespace CakeTron.Core
 
             _log.Information("Listning for changes in {0}...", path);
 
-            var cancelled = false;
-            while (true)
+            var handles = new[] {_engineTokenSource.Token.WaitHandle, source.Token.WaitHandle};
+            while (WaitHandle.WaitAny(handles, 1000) == WaitHandle.WaitTimeout)
             {
-                if (!cancelled && File.Exists(path))
+                if (File.Exists(path))
                 {
                     // Abort the engine. 
                     _log.Information("Web job have been cancelled.");
                     _engineTokenSource.Cancel();
-                    cancelled = true;
-                }
-
-                // Time to abort?
-                if (source.Token.WaitHandle.WaitOne(1000))
-                {
                     break;
                 }
             }
+
+            _log.Verbose("Not listening anymore.");
         }
     }
 }

@@ -63,6 +63,9 @@ namespace CakeTron.Core
                             continue;
                         }
 
+                        // Throw if cancellation was requested.
+                        context.Token.ThrowIfCancellationRequested();
+
                         var message = JsonConvert.DeserializeObject<GitterMessage>(line);
                         if (message.FromUser.Id == context.Bot.Id)
                         {

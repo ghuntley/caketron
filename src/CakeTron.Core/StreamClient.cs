@@ -56,13 +56,10 @@ namespace CakeTron.Core
             var tasks = new Task[context.Rooms.Length];
             for (var index = 0; index < context.Rooms.Length; index++)
             {
-                tasks[index] = Task.Factory
-                    .StartNew(obj => new StreamListener(_log).Listen(obj as StreamListenerContext, message => _inbox.Enqueue(message)).Wait(),
-                        new StreamListenerContext(_client, context.Rooms[index], context.Bot, source.Token), TaskCreationOptions.LongRunning)
-                    .ContinueWith(task => _log.Information("Task was canceled"),
-                        TaskContinuationOptions.OnlyOnCanceled)
-                    .ContinueWith(task => _log.Error("Task failed!"),
-                        TaskContinuationOptions.OnlyOnFaulted);
+                tasks[index] = Task.Factory.StartNew(obj =>
+                    new StreamListener(_log).Listen(obj as StreamListenerContext, message => _inbox.Enqueue(message)).Wait(),
+                    new StreamListenerContext(_client, context.Rooms[index], context.Bot, source.Token),
+                    TaskCreationOptions.LongRunning);
             }
 
             try
@@ -72,13 +69,19 @@ namespace CakeTron.Core
                 if (!source.Token.IsCancellationRequested)
                 {
                     // Telling tasks to quit.
-                    _log.Information("Telling listeners to cancel...");
+                    _log.Information("A listener died.");
+                    _log.Information("Telling all listeners to cancel...");
                     source.Cancel(false);
                 }
             }
             catch (OperationCanceledException)
             {
                 _log.Information("Stream client was requested to stop.");
+                if (!source.Token.IsCancellationRequested)
+                {
+                    _log.Information("Telling all listeners to cancel...");
+                    source.Cancel(false);
+                }
             }
 
             WaitForTasksToStop(tasks);
