@@ -57,7 +57,7 @@ namespace CakeTron.Core
                         // Throw if cancellation was requested.
                         context.Token.ThrowIfCancellationRequested();
 
-                        var line = await reader.ReadLineAsync();
+                        var line = await reader.ReadLineAsync().WithCancellation(context.Token);
                         if (string.IsNullOrWhiteSpace(line))
                         {
                             continue;
