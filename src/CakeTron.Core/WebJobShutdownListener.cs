@@ -51,13 +51,15 @@ namespace CakeTron.Core
 
             _log.Information("Listning for changes in {0}...", path);
 
+            var cancelled = false;
             while (true)
             {
-                if (File.Exists(path))
+                if (!cancelled && File.Exists(path))
                 {
                     // Abort the engine. 
                     _log.Information("Web job have been cancelled.");
                     _engineTokenSource.Cancel();
+                    cancelled = true;
                 }
 
                 // Time to abort?
