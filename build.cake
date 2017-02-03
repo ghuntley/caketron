@@ -63,7 +63,7 @@ Task("Deploy")
     .Does(() =>
 {
     var source = MakeAbsolute(Directory("./.artifacts/bin"));
-    var destination = MakeAbsolute(Kudu.Deployment.Target.Combine("./jobs/continuous/CakeTron"));
+    var destination = MakeAbsolute(Kudu.Deployment.Target.Combine("./app_data/jobs/continuous/CakeTron"));
 
     Information("Deploying from {0} to {1}.", source, destination);
     Kudu.Sync(source, destination);
