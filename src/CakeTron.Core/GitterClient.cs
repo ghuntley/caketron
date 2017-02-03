@@ -37,7 +37,7 @@ namespace CakeTron.Core
 
         internal async Task Reply(GitterRoom room, GitterUser fromUser, string text)
         {
-            var message = new GitterMessage { Text = $"@{fromUser.Username}: {text}"};
+            var message = new GitterMessage { Text = $"@{fromUser.Username}: {text}" };
             await Post($"https://api.gitter.im/v1/rooms/{room.Id}/chatMessages", message);
         }
 

@@ -4,7 +4,7 @@ namespace CakeTron.Core
 {
     public abstract class Context
     {
-        public GitterClient GitterClient { get; }
+        internal GitterClient GitterClient { get; }
         public GitterUser Bot { get; }
         
         protected Context(GitterClient client, GitterUser bot)
