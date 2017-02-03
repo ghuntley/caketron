@@ -59,17 +59,17 @@ namespace CakeTron.Core
                 tasks[index] = Task.Factory.StartNew(obj =>
                     new StreamListener(_log).Listen(obj as StreamListenerContext, message => _inbox.Enqueue(message)).Wait(),
                     new StreamListenerContext(_client, context.Rooms[index], context.Bot, source.Token),
-                    TaskCreationOptions.LongRunning);
+                    source.Token, TaskCreationOptions.LongRunning, TaskScheduler.Current);
             }
 
             try
             {
                 // Wait for any task to exit or a request to cancel.
-                Task.WaitAny(tasks, source.Token);
-                if (!source.Token.IsCancellationRequested)
+                var index = Task.WaitAny(tasks, source.Token);
+                if (!source.Token.IsCancellationRequested && index > 0 && index < context.Rooms.Length)
                 {
                     // Telling tasks to quit.
-                    _log.Information("A listener died.");
+                    _log.Information("The listener for {0} died.", context.Rooms[index]);
                     _log.Information("Telling all listeners to cancel...");
                     source.Cancel(false);
                 }
@@ -95,16 +95,20 @@ namespace CakeTron.Core
                 Task.WaitAll(tasks);
                 _log.Information("All listeners stopped.");
             }
-            catch (AggregateException e)
+            catch (AggregateException ex)
             {
-                foreach (var inner in e.InnerExceptions)
+                foreach (var inner in ex.InnerExceptions)
                 {
                     var exception = inner as TaskCanceledException;
                     if (exception == null)
                     {
-                        _log.Error("Exception: {Error}", inner.Message);
+                        _log.Error("AggregateException: {Error}", inner.Message);
                     }
                 }
+            }
+            catch (Exception ex)
+            {
+                _log.Error("Exception: {Error}", ex.Message);
             }
         }
     }

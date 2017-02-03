@@ -1,18 +1,25 @@
-﻿using System;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
+using CakeTron.Core.Diagnostics;
 
 // ReSharper disable once CheckNamespace
 namespace CakeTron
 {
     internal static class TaskExtensions
     {
-        public static async Task<T> WithCancellation<T>(this Task<T> task, CancellationToken cancellationToken)
+        // http://stackoverflow.com/a/28626769
+        public static Task<T> WithCancellation<T>(this Task<T> task, CancellationToken token)
         {
-            using (cancellationToken.Register(cancellationToken.ThrowIfCancellationRequested, true))
+            if (task.IsCompleted)
             {
-                return await task;
+                return task;
             }
+
+            return task.ContinueWith(
+                completedTask => completedTask.GetAwaiter().GetResult(),
+                token,
+                TaskContinuationOptions.ExecuteSynchronously,
+                TaskScheduler.Default);
         }
     }
 }
