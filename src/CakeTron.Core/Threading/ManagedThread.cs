@@ -3,6 +3,18 @@ using CakeTron.Core.Diagnostics;
 
 namespace CakeTron.Core.Threading
 {
+    public abstract class ManagedThread : ManagedThread<object>
+    {
+        protected ManagedThread(ILog log) : base(log)
+        {
+        }
+
+        protected sealed override object CreateContext()
+        {
+            return null;
+        }
+    }
+
     public abstract class ManagedThread<TContext>
         where TContext : class
     {
@@ -48,9 +60,11 @@ namespace CakeTron.Core.Threading
             {
                 if (_handle.RunningEvent.WaitHandle.WaitOne(0))
                 {
+                    _log.Verbose("Stopping {0} thread...", FriendlyName);
                     _source.Cancel();
                     _handle.StoppedEvent.Wait();
                     _source.Dispose();
+                    _log.Verbose("{0} thread stopped.", FriendlyName);
                 }
             }
         }

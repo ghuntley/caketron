@@ -16,6 +16,7 @@ namespace CakeTron.Core
         private readonly ILog _log;
         private readonly IInbox _inbox;
         private readonly StreamClient _streamClient;
+        private readonly WebJobShutdownListener _webJobShutdownListener;
         private readonly EventDispatcher _dispatcher;
 
         public override string FriendlyName => "Engine";
@@ -38,6 +39,7 @@ namespace CakeTron.Core
 
             _inbox = inbox;
             _streamClient = new StreamClient(settings, _inbox, client, gitter, _log);
+            _webJobShutdownListener = new WebJobShutdownListener(_log);
             _dispatcher = new EventDispatcher(gitter, _log, handlers);
         }
 
@@ -75,12 +77,16 @@ namespace CakeTron.Core
         {
             try
             {
+                // Start the web job shutdown listener.
+                _webJobShutdownListener.SetCancellationTokenSource(source);
+                _webJobShutdownListener.Start().Running.WaitOne();
+
                 // Start the stream client.
-                var handle = _streamClient.Start();
-                handle.Running.WaitOne();
+                _streamClient.Start().Running.WaitOne();
 
                 while (true)
                 {
+                    // Wait for any messages to arrive.
                     var message = _inbox.Dequeue(source.Token);
                     message?.Accept(_dispatcher);
                 }
@@ -92,6 +98,7 @@ namespace CakeTron.Core
             finally
             {
                 _streamClient.Stop();
+                _webJobShutdownListener.Stop();
             }
         }
     }
