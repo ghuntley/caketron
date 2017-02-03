@@ -49,11 +49,14 @@ namespace CakeTron.Core
                 File.Delete(path);
             }
 
+            _log.Information("Listning for changes in {0}...", path);
+
             while (true)
             {
                 if (File.Exists(path))
                 {
                     // Abort the engine. 
+                    _log.Information("Web job have been cancelled.");
                     _engineTokenSource.Cancel();
                 }
 
