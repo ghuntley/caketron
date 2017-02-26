@@ -49,7 +49,6 @@ Task("Package")
     // Copy files.
     CopyFileToDirectory("./res/run.cmd", "./.artifacts/bin");
     CopyFileToDirectory("./settings.job", "./.artifacts/bin");
-    CopyFileToDirectory($"./src/CakeTron/bin/{config}/netcoreapp1.1/appsettings.json", "./.artifacts/bin");
 
     // Zip the bin folder for manual upload?
     if(!Kudu.IsRunningOnKudu)
