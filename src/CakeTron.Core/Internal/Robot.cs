@@ -3,7 +3,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using CakeTron.Core.Diagnostics;
-using CakeTron.Core.Utilities;
 
 namespace CakeTron.Core.Internal
 {
@@ -11,6 +10,8 @@ namespace CakeTron.Core.Internal
     {
         private readonly List<IAdapter> _adapters;
         private readonly List<IWorker> _workers;
+        private readonly List<RobotPart> _parts;
+        private readonly IBrainProvider _brain;
         private readonly ILog _log;
         private readonly ManualResetEvent _stopped;
         private readonly List<Task> _tasks;
@@ -20,10 +21,12 @@ namespace CakeTron.Core.Internal
         public IReadOnlyList<IAdapter> Adapters => _adapters;
         public WaitHandle Stopped => _stopped;
 
-        public Robot(IEnumerable<IAdapter> adapters, IEnumerable<IWorker> workers, ILog log)
+        public Robot(IEnumerable<IAdapter> adapters, IEnumerable<IWorker> workers, IEnumerable<RobotPart> parts, IBrainProvider brain, ILog log)
         {
             _adapters = new List<IAdapter>(adapters ?? Enumerable.Empty<IAdapter>());
             _workers = new List<IWorker>(workers ?? Enumerable.Empty<IWorker>());
+            _parts = new List<RobotPart>(parts ?? Enumerable.Empty<RobotPart>());
+            _brain = brain;
             _log = log;
 
             _tasks = new List<Task>();
@@ -40,6 +43,15 @@ namespace CakeTron.Core.Internal
                 // Create the cancellation token source.
                 _source = new CancellationTokenSource();
 
+                // Connect the brain.
+                _brain.Connect();
+
+                // Initialize all parts.
+                foreach (var part in _parts)
+                {
+                    part.Initialize();
+                }
+
                 // Start all tasks.
                 _tasks.Clear();
                 foreach (var worker in _workers)
@@ -48,7 +60,9 @@ namespace CakeTron.Core.Internal
                 }
 
                 // Configure the tasks.
-                Task.WhenAll(_tasks).ContinueWith(task => _stopped.Set());
+                Task.WhenAll(_tasks)
+                    .ContinueWith(task => _brain.Disconnect())
+                    .ContinueWith(task => _stopped.Set());
             }
         }
 
@@ -62,10 +76,8 @@ namespace CakeTron.Core.Internal
 
         public void Join()
         {
-            if (!_stopped.WaitOne(0))
-            {
-                Task.WaitAll(_tasks.ToArray());
-            }
+            // Wait until we're stopped.
+            _stopped.WaitOne();
         }
     }
 }

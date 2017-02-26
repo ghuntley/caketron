@@ -10,6 +10,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CakeTron.Gitter", "CakeTron
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CakeTron.Slack", "CakeTron.Slack\CakeTron.Slack.csproj", "{9DDBD606-EC9C-4DB4-A245-B3DF7ADD1D4B}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Adapters", "Adapters", "{41CE6908-DAB7-471F-BFB2-3BE49684A708}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Brains", "Brains", "{4AF74B66-BE6F-45D3-9354-1BE4232502EC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CakeTron.Brains.FileSystem", "CakeTron.Brains.FileSystem\CakeTron.Brains.FileSystem.csproj", "{C91362D0-895C-45AB-85DF-B3AEE7947523}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -68,8 +74,25 @@ Global
 		{9DDBD606-EC9C-4DB4-A245-B3DF7ADD1D4B}.Release|x64.Build.0 = Release|x64
 		{9DDBD606-EC9C-4DB4-A245-B3DF7ADD1D4B}.Release|x86.ActiveCfg = Release|x86
 		{9DDBD606-EC9C-4DB4-A245-B3DF7ADD1D4B}.Release|x86.Build.0 = Release|x86
+		{C91362D0-895C-45AB-85DF-B3AEE7947523}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C91362D0-895C-45AB-85DF-B3AEE7947523}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C91362D0-895C-45AB-85DF-B3AEE7947523}.Debug|x64.ActiveCfg = Debug|x64
+		{C91362D0-895C-45AB-85DF-B3AEE7947523}.Debug|x64.Build.0 = Debug|x64
+		{C91362D0-895C-45AB-85DF-B3AEE7947523}.Debug|x86.ActiveCfg = Debug|x86
+		{C91362D0-895C-45AB-85DF-B3AEE7947523}.Debug|x86.Build.0 = Debug|x86
+		{C91362D0-895C-45AB-85DF-B3AEE7947523}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C91362D0-895C-45AB-85DF-B3AEE7947523}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C91362D0-895C-45AB-85DF-B3AEE7947523}.Release|x64.ActiveCfg = Release|x64
+		{C91362D0-895C-45AB-85DF-B3AEE7947523}.Release|x64.Build.0 = Release|x64
+		{C91362D0-895C-45AB-85DF-B3AEE7947523}.Release|x86.ActiveCfg = Release|x86
+		{C91362D0-895C-45AB-85DF-B3AEE7947523}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{8B7A98D7-51A1-449D-85D7-1949EBC6F1BB} = {41CE6908-DAB7-471F-BFB2-3BE49684A708}
+		{9DDBD606-EC9C-4DB4-A245-B3DF7ADD1D4B} = {41CE6908-DAB7-471F-BFB2-3BE49684A708}
+		{C91362D0-895C-45AB-85DF-B3AEE7947523} = {4AF74B66-BE6F-45D3-9354-1BE4232502EC}
 	EndGlobalSection
 EndGlobal

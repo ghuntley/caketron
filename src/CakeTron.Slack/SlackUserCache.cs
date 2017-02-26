@@ -26,12 +26,12 @@ namespace CakeTron.Slack
             }
         }
 
-        public User GetUser(string id)
+        public User Get(string id)
         {
             return _dictionary.TryGetValue(id, out User user) ? user : null;
         }
 
-        public void AddUser(SlackUser slackUser)
+        public void Add(SlackUser slackUser)
         {
             var user = new User { Id = slackUser.Id, DisplayName = slackUser.Profile.FirstName, Username = slackUser.Name };
             _dictionary.AddOrUpdate(slackUser.Id, user, (k, v) => user);

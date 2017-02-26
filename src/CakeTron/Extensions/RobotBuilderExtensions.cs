@@ -2,7 +2,6 @@
 using CakeTron.Core.Diagnostics;
 using CakeTron.Diagnostics;
 using CakeTron.Parts;
-using CakeTron.Parts.Karma;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
@@ -21,10 +20,10 @@ namespace CakeTron
             return builder;
         }
 
-        public static RobotBuilder UseInMemoryKarma(this RobotBuilder builder)
+        public static RobotBuilder UseKarma(this RobotBuilder builder)
         {
             builder.AddPart<KarmaPart>();
-            builder.Services.AddSingleton<IKarmaProvider, InMemoryKarmaProvider>();
+
             return builder;
         }
 
@@ -37,13 +36,16 @@ namespace CakeTron
                 .AddPart<PodBayDoorsPart>();
         }
 
-        public static RobotBuilder UseSerilog(this RobotBuilder builder, LogEventLevel level)
+        public static RobotBuilder UseSerilogConsole(this RobotBuilder builder, LogEventLevel level)
         {
-            builder.Services.AddSingleton<ILog>(new SerilogLogAdapter(new LoggerConfiguration()
-                .WriteTo.LiterateConsole()
-                .MinimumLevel.Is(level)
-                .Enrich.FromLogContext()
-                .CreateLogger()));
+            builder.Services.AddSingleton<ILog>(
+                new SerilogLogAdapter(
+                    new LoggerConfiguration()
+                        .WriteTo.LiterateConsole()
+                        .MinimumLevel.Is(level)
+                        .Enrich.FromLogContext()
+                        .CreateLogger()));
+
             return builder;
         }
     }

@@ -13,6 +13,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="brain\**" />
+    <EmbeddedResource Remove="brain\**" />
+    <None Remove="brain\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\CakeTron.Core\CakeTron.Core.csproj" />
     <ProjectReference Include="..\CakeTron.Gitter\CakeTron.Gitter.csproj" />
     <ProjectReference Include="..\CakeTron.Slack\CakeTron.Slack.csproj" />

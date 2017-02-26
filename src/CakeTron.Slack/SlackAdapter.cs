@@ -151,8 +151,8 @@ namespace CakeTron.Slack
 
             if (string.IsNullOrWhiteSpace(message.SubType))
             {
-                var room = _rooms.GetRoom(message.ChannelId);
-                var user = _users.GetUser(message.UserId);
+                var room = _rooms.Get(message.ChannelId);
+                var user = _users.Get(message.UserId);
 
                 // Unknown room or user?
                 if (room == null || user == null)
@@ -184,21 +184,21 @@ namespace CakeTron.Slack
         private void ProcessTeamJoin(Stream stream)
         {
             var message = Deserialize<SlackTeamJoin>(stream);
-            _users.AddUser(message.User);
+            _users.Add(message.User);
             _log.Information("User {0} ({1}) joined the team.", message.User.Profile.RealName, message.User.Name);
         }
 
         private void ProcessChannelCreated(Stream stream)
         {
             var message = Deserialize<SlackChannelCreated>(stream);
-            _rooms.AddRoom(message.Channel);
+            _rooms.Add(message.Channel);
             _log.Information("Channel {0} was created.", message.Channel.Name);
         }
 
         private void ProcessGroupJoined(Stream stream)
         {
             var message = Deserialize<SlackChannelCreated>(stream);
-            _rooms.AddRoom(message.Channel);
+            _rooms.Add(message.Channel);
             _log.Information("We joined the group {0}.", message.Channel.Name);
         }
 

@@ -14,10 +14,10 @@ namespace CakeTron.Core.Internal
         private readonly List<RobotPart> _parts;
         private readonly object _lock;
 
-        public EventDispatcher(IEnumerable<RobotPart> handlers, ILog log)
+        public EventDispatcher(IEnumerable<RobotPart> parts, ILog log)
         {
             _log = log;
-            _parts = new List<RobotPart>(handlers);
+            _parts = new List<RobotPart>(parts);
             _lock = new object();
         }
 

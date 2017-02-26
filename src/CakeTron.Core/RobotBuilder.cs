@@ -23,6 +23,10 @@ namespace CakeTron.Core
 
         private static void ConfigureDefaultRegistrations(IServiceCollection services)
         {
+            // Tamperer
+            services.AddSingleton<Brain>();
+            services.AddSingleton<IBrainProvider, InMemoryBrain>();
+
             // Parts
             services.AddSingleton<RobotPart, HelpCommand>();
 

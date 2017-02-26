@@ -35,15 +35,15 @@ namespace CakeTron.Slack
             }
         }
 
-        public Room GetRoom(string id)
-        {
-            return _dictionary.TryGetValue(id, out Room room) ? room : null;
-        }
-
-        public void AddRoom(SlackChannel channel)
+        public void Add(SlackChannel channel)
         {
             var room = new Room { Id = channel.Id, Name = channel.Name };
             _dictionary.AddOrUpdate(channel.Id, room, (k, v) => room);
+        }
+
+        public Room Get(string id)
+        {
+            return _dictionary.TryGetValue(id, out Room room) ? room : null;
         }
 
         public Room Remove(string id)

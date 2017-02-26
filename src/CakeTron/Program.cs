@@ -19,9 +19,9 @@ namespace CakeTron
             var robot = new RobotBuilder()
                 .UseGitter(configuration["Gitter:Token"])
                 .UseSlack(configuration["Slack:Token"])
+                .UseKarma()
                 .UseDefaultRobotParts()
-                .UseInMemoryKarma()
-                .UseSerilog(LogEventLevel.Debug)
+                .UseSerilogConsole(LogEventLevel.Debug)
                 .Build();
 
             // Start the robot.

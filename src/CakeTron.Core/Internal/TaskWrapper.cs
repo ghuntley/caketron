@@ -3,7 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using CakeTron.Core.Diagnostics;
 
-namespace CakeTron.Core.Utilities
+namespace CakeTron.Core.Internal
 {
     internal sealed class TaskWrapper
     {
