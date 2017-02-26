@@ -8,14 +8,14 @@ using Newtonsoft.Json;
 
 namespace CakeTron.Slack
 {
-    internal sealed class SlackClient : IBroker
+    internal sealed class SlackBroker : IBroker
     {
         private readonly SlackConfiguration _configuration;
         private readonly HttpClient _client;
 
         private const string Url = "https://slack.com/api/chat.postMessage";
 
-        public SlackClient(SlackConfiguration configuration)
+        public SlackBroker(SlackConfiguration configuration)
         {
             _configuration = configuration;
             _client = new HttpClient();

@@ -13,10 +13,17 @@ namespace CakeTron.Gitter
                 throw new ArgumentNullException(nameof(token));
             }
 
+            // Configuration
             builder.Services.AddSingleton(new GitterConfiguration() { Token = token });
-            builder.Services.AddSingleton<GitterClient>();
-            builder.Services.AddSingleton<IBroker>(x => x.GetService<GitterClient>());
-            builder.Services.AddSingleton<IAdapter, GitterAdapter>();
+
+            // Adapter
+            builder.Services.AddSingleton<GitterAdapter>();
+            builder.Services.AddSingleton<IAdapter>(x => x.GetService<GitterAdapter>());
+            builder.Services.AddSingleton<IWorker>(x => x.GetService<GitterAdapter>());
+
+            // Broker
+            builder.Services.AddSingleton<GitterBroker>();
+            builder.Services.AddSingleton<IBroker>(x => x.GetService<GitterBroker>());
 
             return builder;
         }

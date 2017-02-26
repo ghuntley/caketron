@@ -5,21 +5,21 @@ using CakeTron.Core.Diagnostics;
 
 namespace CakeTron.Core.Utilities
 {
-    public abstract class TaskWrapper
+    internal sealed class TaskWrapper
     {
         private readonly ILog _log;
         private CancellationTokenSource _external;
         private CancellationTokenSource _internal;
+        private readonly IWorker _worker;
 
-        public abstract string FriendlyName { get; }
+        public string FriendlyName => _worker.FriendlyName;
         public Task Task { get; private set; }
 
-        protected TaskWrapper(ILog log)
+        public TaskWrapper(IWorker worker, ILog log)
         {
+            _worker = worker;
             _log = log;
         }
-
-        protected abstract Task<bool> Run(CancellationToken token);
 
         public Task Start(CancellationTokenSource source)
         {
@@ -35,7 +35,7 @@ namespace CakeTron.Core.Utilities
                     _log.Debug("{0} started.", FriendlyName);
 
                     var linked = CancellationTokenSource.CreateLinkedTokenSource(_external.Token, _internal.Token);
-                    if (!Run(linked.Token).GetAwaiter().GetResult())
+                    if (!_worker.Run(linked.Token).GetAwaiter().GetResult())
                     {
                         _external.Cancel();
                     }

@@ -6,26 +6,24 @@ using CakeTron.Core;
 using CakeTron.Core.Diagnostics;
 using CakeTron.Core.Domain;
 using CakeTron.Core.Events;
-using CakeTron.Core.Utilities;
 using CakeTron.Gitter.Models;
 using Newtonsoft.Json.Linq;
 
 namespace CakeTron.Gitter
 {
-    internal sealed class GitterAdapter : TaskWrapper, IAdapter
+    internal sealed class GitterAdapter : IAdapter, IWorker
     {
-        private readonly GitterClient _client;
+        private readonly GitterBroker _broker;
         private readonly BayeuxClient _bayeux;
         private readonly IMessageQueue _messageQueue;
         private readonly ILog _log;
 
-        public IBroker Broker => _client;
-        public override string FriendlyName => "Gitter adapter";
+        public string FriendlyName => "Gitter adapter";
+        public IBroker Broker => _broker;
 
-        public GitterAdapter(GitterClient client, GitterConfiguration configuration, IMessageQueue messageQueue, ILog log)
-            : base(log)
+        public GitterAdapter(GitterBroker broker, GitterConfiguration configuration, IMessageQueue messageQueue, ILog log)
         {
-            _client = client;
+            _broker = broker;
             _messageQueue = messageQueue;
             _log = new AdapterLog("GITTER", log);
 
@@ -35,7 +33,7 @@ namespace CakeTron.Gitter
             _bayeux = new BayeuxClient(settings);
         }
 
-        protected override async Task<bool> Run(CancellationToken token)
+        public async Task<bool> Run(CancellationToken token)
         {
             try
             {
@@ -43,11 +41,11 @@ namespace CakeTron.Gitter
                 _bayeux.Connect();
 
                 // Get the current user (the bot).
-                var user = await _client.GetCurrentUser();
+                var user = await _broker.GetCurrentUser();
                 _log.Information("Current user is {0}.", user.Username);
 
                 // Subscribe to rooms.
-                var rooms = await _client.GetRooms();
+                var rooms = await _broker.GetRooms();
                 foreach (var room in rooms)
                 {
                     _bayeux.Subscribe($"/api/v1/rooms/{room.Id}/chatMessages", message => { MessageReceived(user, room, message); });
@@ -107,7 +105,7 @@ namespace CakeTron.Gitter
             };
 
             // Enqueue the message.
-            _messageQueue.Enqueue(new MessageEvent(_client)
+            _messageQueue.Enqueue(new MessageEvent(_broker)
             {
                 Bot = user,
                 Room = room,

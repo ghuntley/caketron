@@ -1,25 +1,22 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using CakeTron.Core.Diagnostics;
-using CakeTron.Core.Utilities;
 
 namespace CakeTron.Core.Internal
 {
-    internal sealed class MessageRouter : TaskWrapper
+    internal sealed class MessageRouter : IWorker
     {
         private readonly MessageQueue _messageQueue;
         private readonly EventDispatcher _dispatcher;
 
-        public override string FriendlyName => "Message router";
+        public string FriendlyName => "Message router";
 
-        public MessageRouter(MessageQueue messageQueue, EventDispatcher dispatcher, ILog log) 
-            : base(log)
+        public MessageRouter(MessageQueue messageQueue, EventDispatcher dispatcher) 
         {
             _messageQueue = messageQueue;
             _dispatcher = dispatcher;
         }
 
-        protected override Task<bool> Run(CancellationToken token)
+        public Task<bool> Run(CancellationToken token)
         {
             while (true)
             {

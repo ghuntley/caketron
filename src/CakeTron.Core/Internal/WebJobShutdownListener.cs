@@ -3,23 +3,21 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using CakeTron.Core.Diagnostics;
-using CakeTron.Core.Utilities;
 
 namespace CakeTron.Core.Internal
 {
-    internal sealed class WebJobShutdownListener : TaskWrapper
+    internal sealed class WebJobShutdownListener : IWorker
     {
         private readonly ILog _log;
 
-        public override string FriendlyName => "Web job shutdown listener";
+        public string FriendlyName => "Web job shutdown listener";
 
         public WebJobShutdownListener(ILog log) 
-            : base(log)
         {
             _log = log;
         }
 
-        protected override Task<bool> Run(CancellationToken token)
+        public Task<bool> Run(CancellationToken token)
         {
             var type = Environment.GetEnvironmentVariable("WEBJOBS_TYPE");
             if (string.IsNullOrWhiteSpace(type))

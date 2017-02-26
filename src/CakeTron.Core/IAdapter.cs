@@ -1,12 +1,8 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-
-namespace CakeTron.Core
+﻿namespace CakeTron.Core
 {
     public interface IAdapter
     {
+        string FriendlyName { get; }
         IBroker Broker { get; }
-
-        Task Start(CancellationTokenSource source);
     }
 }

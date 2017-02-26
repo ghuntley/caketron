@@ -1,4 +1,5 @@
-﻿using CakeTron.Core;
+﻿using System;
+using CakeTron.Core;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace CakeTron.Slack
@@ -7,10 +8,22 @@ namespace CakeTron.Slack
     {
         public static RobotBuilder UseSlack(this RobotBuilder builder, string token)
         {
-            builder.Services.AddSingleton<SlackClient>();
-            builder.Services.AddSingleton<IBroker>(x => x.GetService<SlackClient>());
-            builder.Services.AddSingleton<IAdapter, SlackAdapter>();
+            if (string.IsNullOrWhiteSpace(token))
+            {
+                throw new ArgumentNullException(nameof(token));
+            }
+
+            // Configuration
             builder.Services.AddSingleton(new SlackConfiguration(token));
+
+            // Adapter
+            builder.Services.AddSingleton<SlackAdapter>();
+            builder.Services.AddSingleton<IAdapter>(x => x.GetService<SlackAdapter>());
+            builder.Services.AddSingleton<IWorker>(x => x.GetService<SlackAdapter>());
+
+            // Broker
+            builder.Services.AddSingleton<SlackBroker>();
+            builder.Services.AddSingleton<IBroker>(x => x.GetService<SlackBroker>());
 
             return builder;
         }

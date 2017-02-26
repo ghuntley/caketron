@@ -13,11 +13,11 @@ using Newtonsoft.Json;
 
 namespace CakeTron.Gitter
 {
-    internal sealed class GitterClient : IBroker
+    internal sealed class GitterBroker : IBroker
     {
         private readonly HttpClient _client;
 
-        public GitterClient(GitterConfiguration configuration)
+        public GitterBroker(GitterConfiguration configuration)
         {
             _client = new HttpClient { Timeout = TimeSpan.FromMilliseconds(Timeout.Infinite) };
             _client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));

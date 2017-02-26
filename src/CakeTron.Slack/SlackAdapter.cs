@@ -10,28 +10,26 @@ using CakeTron.Core;
 using CakeTron.Core.Diagnostics;
 using CakeTron.Core.Domain;
 using CakeTron.Core.Events;
-using CakeTron.Core.Utilities;
 using CakeTron.Slack.Models;
 using Newtonsoft.Json;
 
 namespace CakeTron.Slack
 {
-    internal sealed class SlackAdapter : TaskWrapper, IAdapter
+    internal sealed class SlackAdapter : IAdapter, IWorker
     {
-        private readonly SlackClient _client;
+        private readonly SlackBroker _broker;
         private readonly IMessageQueue _messageQueue;
         private readonly ILog _log;
         private readonly JsonSerializer _serializer;
         private readonly SlackRoomCache _rooms;
         private readonly SlackUserCache _users;
 
-        public override string FriendlyName => "Slack adapter";
-        public IBroker Broker => _client;
+        public string FriendlyName => "Slack adapter";
+        public IBroker Broker => _broker;
 
-        public SlackAdapter(SlackClient client, IMessageQueue messageQueue, ILog log)
-            : base(log)
+        public SlackAdapter(SlackBroker broker, IMessageQueue messageQueue, ILog log)
         {
-            _client = client;
+            _broker = broker;
             _messageQueue = messageQueue;
             _log = new AdapterLog("SLACK", log);
             _serializer = new JsonSerializer();
@@ -39,10 +37,10 @@ namespace CakeTron.Slack
             _users = new SlackUserCache();
         }
 
-        protected override async Task<bool> Run(CancellationToken token)
+        public async Task<bool> Run(CancellationToken token)
         {
             // Connect to Slack.
-            var handshake = await _client.Handshake();
+            var handshake = await _broker.Handshake();
             if (!handshake.Ok)
             {
                 throw new InvalidOperationException("Could not connect to Slack.");
@@ -166,7 +164,7 @@ namespace CakeTron.Slack
                 var text = handshake.Users.Aggregate(message.Text,
                     (m, u) => Regex.Replace(m, $"<@{u.Id}>", $"@{u.Name}"));
 
-                _messageQueue.Enqueue(new MessageEvent(_client)
+                _messageQueue.Enqueue(new MessageEvent(_broker)
                 {
                     Bot = bot,
                     Message = new Message { Text = text, User = user },

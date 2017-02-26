@@ -2,28 +2,31 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using CakeTron.Core.Diagnostics;
+using CakeTron.Core.Utilities;
 
 namespace CakeTron.Core.Internal
 {
     internal sealed class Robot : IRobot
     {
-        private readonly WebJobShutdownListener _listener;
-        private readonly MessageRouter _router;
         private readonly List<IAdapter> _adapters;
+        private readonly List<IWorker> _workers;
+        private readonly ILog _log;
         private readonly ManualResetEvent _stopped;
         private readonly List<Task> _tasks;
 
         private CancellationTokenSource _source;
 
+        public IReadOnlyList<IAdapter> Adapters => _adapters;
         public WaitHandle Stopped => _stopped;
 
-        public Robot(WebJobShutdownListener listener, MessageRouter router, IEnumerable<IAdapter> adapters)
+        public Robot(IEnumerable<IAdapter> adapters, IEnumerable<IWorker> workers, ILog log)
         {
-            _listener = listener;
-            _router = router;
             _adapters = new List<IAdapter>(adapters ?? Enumerable.Empty<IAdapter>());
-            _tasks = new List<Task>();
+            _workers = new List<IWorker>(workers ?? Enumerable.Empty<IWorker>());
+            _log = log;
 
+            _tasks = new List<Task>();
             _stopped = new ManualResetEvent(true);
         }
 
@@ -36,17 +39,12 @@ namespace CakeTron.Core.Internal
 
                 // Create the cancellation token source.
                 _source = new CancellationTokenSource();
-                _tasks.Clear();
-
 
                 // Start all tasks.
-                _tasks.Add(_listener.Start(_source));
-                _tasks.Add(_router.Start(_source));
-
-                // Start the adapter task.
-                foreach (var adapter in _adapters)
+                _tasks.Clear();
+                foreach (var worker in _workers)
                 {
-                    _tasks.Add(adapter.Start(_source));
+                    _tasks.Add(new TaskWrapper(worker, _log).Start(_source));
                 }
 
                 // Configure the tasks.

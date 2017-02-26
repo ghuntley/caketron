@@ -1,6 +1,4 @@
-﻿using System;
-using System.Linq;
-using CakeTron.Core.Diagnostics;
+﻿using CakeTron.Core.Diagnostics;
 using CakeTron.Core.Internal;
 using CakeTron.Core.Internal.Parts;
 using Microsoft.Extensions.DependencyInjection;
@@ -19,15 +17,6 @@ namespace CakeTron.Core
 
         public IRobot Build()
         {
-            if (Services.All(s => s.ServiceType != typeof(IAdapter)))
-            {
-                throw new InvalidOperationException("No adapter have been registered.");
-            }
-            if (Services.All(s => s.ServiceType != typeof(IBroker)))
-            {
-                throw new InvalidOperationException("No broker have been registered.");
-            }
-
             var provider = Services.BuildServiceProvider();
             return provider.GetRequiredService<IRobot>();
         }
@@ -47,8 +36,8 @@ namespace CakeTron.Core
 
             // Robot
             services.AddSingleton<IRobot, Robot>();
-            services.AddSingleton<WebJobShutdownListener>();
-            services.AddSingleton<MessageRouter>();
+            services.AddSingleton<IWorker, WebJobShutdownListener>();
+            services.AddSingleton<IWorker, MessageRouter>();
             services.AddSingleton<EventDispatcher>();
             services.AddSingleton<IEventDispatcher>(provider => provider.GetService<EventDispatcher>());
         }
