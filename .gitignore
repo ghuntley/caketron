@@ -9,6 +9,7 @@ tools
 # Development
 appsettings.json
 shutdown
+src/CakeTron/brain
 
 # User-specific files
 *.suo
